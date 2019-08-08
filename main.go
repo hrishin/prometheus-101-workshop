@@ -31,7 +31,7 @@ var (
 )
 
 func main() {
-	// expose HTTP endpoint
+	// expose HTTP endpoint for metrics
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
 		http.ListenAndServe(":5050", nil)

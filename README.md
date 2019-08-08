@@ -30,3 +30,30 @@ We want `metrics` about
 1. How many `jobs` it is processing? 
 2. How much `time` it is taking to process one `job`?
 3. In each `job` how much `amount of data` it is processing?
+
+#### Step-1 : Job Application
+Run the application
+```
+go build -o repl main.go
+```
+
+#### Step-2 : Job counter
+
+Run the application, expose metrics and collect metrics
+
+```
+go build -o repl main.go
+
+./repl
+```
+
+start prometheus in new terminal
+```
+wget https://github.com/prometheus/prometheus/releases/download/v2.11.1/prometheus-2.11.1.linux-386.tar.gz
+
+tar -xzvf prometheus-2.11.1.linux-386.tar.gz 
+
+sudo cp prometheus-2.11.1.linux-386/prometheus /usr/bin/prometheus
+
+prometheus --config.file=promconfig.yaml
+```
