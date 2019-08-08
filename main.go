@@ -15,10 +15,28 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+var (
+	jobCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "repl_processed_jobs_total",
+		Help: "The total number of processed job",
+	})
 )
 
 func main() {
+	// expose HTTP endpoint
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":5050", nil)
+	}()
+
 	//   1. Read input
 	//   2. process input
 	br := bufio.NewReader(os.Stdin)
@@ -31,6 +49,9 @@ func main() {
 			}
 			log.Fatal(err)
 		}
+
+		// count processed jobs
+		jobCounter.Inc()
 	}
 }
 
