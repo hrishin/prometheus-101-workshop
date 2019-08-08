@@ -15,8 +15,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -38,6 +40,15 @@ var (
 		prometheus.GaugeOpts{
 			Name: "repl_processed_jobs_data",
 			Help: "The data size of job",
+		},
+		[]string{"job_name"},
+	)
+
+	jobsDuration = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "repl_processed_jobs_duration_seconds",
+			Help:    "Jobs duration distribution",
+			Buckets: []float64{1, 2, 5, 10},
 		},
 		[]string{"job_name"},
 	)
@@ -77,10 +88,15 @@ func readEvaluateProcess(br *bufio.Reader) (terr error) {
 		return err
 	}
 
+	start := time.Now()
 	out, err := processLine(line)
 	if err != nil {
 		return err
 	}
+	time.Sleep(time.Duration(random(10)) * time.Second)
+	// measure the duration
+	duration := time.Since(start)
+	jobsDuration.With(prometheus.Labels{"job_name": string(line)}).Observe(duration.Seconds())
 	fmt.Printf("< %s\n\n", out)
 	return nil
 }
@@ -92,4 +108,8 @@ func processLine(in []byte) (out []byte, err error) {
 	lastDataSize.Set(size)
 	dataSizePerJob.With(prometheus.Labels{"job_name": string(in)}).Set(size)
 	return bytes.ToUpper(in), nil
+}
+
+func random(t int) int {
+	return rand.Intn(t)
 }
