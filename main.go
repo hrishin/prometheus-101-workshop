@@ -28,6 +28,19 @@ var (
 		Name: "repl_processed_jobs_total",
 		Help: "The total number of processed job",
 	})
+
+	lastDataSize = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "repl_processed_jobs_last_data",
+		Help: "The last job processed data size",
+	})
+
+	dataSizePerJob = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "repl_processed_jobs_data",
+			Help: "The data size of job",
+		},
+		[]string{"job_name"},
+	)
 )
 
 func main() {
@@ -75,5 +88,8 @@ func readEvaluateProcess(br *bufio.Reader) (terr error) {
 // processLine takes in a line of text and
 // transforms it. Currently it just capitalizes it.
 func processLine(in []byte) (out []byte, err error) {
+	size := float64(len(in))
+	lastDataSize.Set(size)
+	dataSizePerJob.With(prometheus.Labels{"job_name": string(in)}).Set(size)
 	return bytes.ToUpper(in), nil
 }
