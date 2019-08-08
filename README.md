@@ -45,6 +45,8 @@ Run the application, expose metrics and collect metrics
 go build -o repl main.go
 
 ./repl
+
+navigate to http://localhost:5050/metrics
 ```
 
 start prometheus in new terminal
@@ -56,4 +58,6 @@ tar -xzvf prometheus-2.11.1.linux-386.tar.gz
 sudo cp prometheus-2.11.1.linux-386/prometheus /usr/bin/prometheus
 
 prometheus --config.file=promconfig.yaml
+
+navigate to http://localhost:9090/graph
 ```
