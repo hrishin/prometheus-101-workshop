@@ -27,6 +27,7 @@ go build -o repl main.go
 #### Whats the problem then?
 
 We want `metrics` about 
-1. How many `jobs` it has processed so far? 
-2. How much `time` its taking to process one `job`?
-3. In each `job` how much `amount of data` its is processing?
+
+1. How many `jobs` it is processing? 
+2. How much `time` it is taking to process one `job`?
+3. In each `job` how much `amount of data` it is processing?
